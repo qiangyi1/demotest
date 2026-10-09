@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>摇一摇跑龙舟【修复版】</title>
+<title>摇一摇跑龙舟【修复版+摇动计数】</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;background:#87CEEB;font-family:system-ui,sans-serif}
@@ -38,8 +38,11 @@ html,body{height:100%;overflow:hidden;background:#87CEEB;font-family:system-ui,s
 #score{
   position:absolute;top:80px;width:100%;text-align:center;color:#fff;font-size:22px;font-weight:bold;
 }
+#shakeCount{
+  position:absolute;top:120px;width:100%;text-align:center;color:#fff;font-size:22px;font-weight:bold;
+}
 #startBtn{
-  position:absolute;top:140px;left:50%;transform:translateX(-50%);
+  position:absolute;top:170px;left:50%;transform:translateX(-50%);
   padding:14px 28px;font-size:18px;border:none;border-radius:99px;background:#ff4444;color:#fff;
 }
 </style>
@@ -47,6 +50,7 @@ html,body{height:100%;overflow:hidden;background:#87CEEB;font-family:system-ui,s
 <body>
 <div id="tip">点击【开始游戏】，允许传感器权限，摇晃手机！</div>
 <div id="score">距离：0 m</div>
+<div id="shakeCount">摇动次数：0</div>
 <button id="startBtn">开始游戏</button>
 
 <div class="water">
@@ -62,10 +66,12 @@ html,body{height:100%;overflow:hidden;background:#87CEEB;font-family:system-ui,s
 <script>
 const boat = document.getElementById('boat');
 const scoreDom = document.getElementById('score');
+const shakeCountDom = document.getElementById('shakeCount');
 const tipDom = document.getElementById('tip');
 const startBtn = document.getElementById('startBtn');
 let posX = 50;
 let distance = 0;
+let shakeTotal = 0; // 摇动总次数
 const shakeThreshold = 12; // 灵敏度，越小越灵敏
 let lastShakeTime = 0;
 
@@ -79,15 +85,18 @@ function onMotion(e) {
   const now = Date.now();
   if(shakeVal > shakeThreshold && now - lastShakeTime > 250){
     lastShakeTime = now;
+    shakeTotal++;
     posX += 35;
     distance += 1;
     boat.style.left = posX + 'px';
     scoreDom.innerText = `距离：${distance} m`;
+    shakeCountDom.innerText = `摇动次数：${shakeTotal}`;
 
     const maxWidth = window.innerWidth - 140;
     if(posX > maxWidth){
       posX = 50;
       distance = 0;
+      shakeTotal = 0; // 冲线重置摇动次数
       alert('🏁 冲线成功！重新开始');
     }
   }

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>摇一摇 跑龙舟</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:#87CEEB;font-family:system-ui,sans-serif}
+.water{
+  position:absolute;
+  bottom:0;left:0;width:100%;height:40%;
+  background:#2980b9;
+}
+.water-wave{
+  position:absolute;top:-20px;width:200%;height:40px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120'%3E%3Cpath fill='%232980b9' d='M0,60 C300,120 400,0 600,60 C800,120 900,0 1200,60 L1200,120 L0,120 Z'/%3E%3C/svg%3E");
+  animation:wave 3s linear infinite;
+}
+@keyframes wave{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.boat{
+  position:absolute;bottom:35%;left:50px;
+  width:120px;height:60px;
+  transition:left 0.1s ease-out;
+}
+.boat-body{
+  width:100%;height:32px;background:#e74c3c;border-radius:50% 50% 20% 20%;position:relative;
+}
+.boat-head{
+  position:absolute;right:-16px;top:-10px;width:24px;height:24px;background:#c0392b;border-radius:50%;
+}
+.people{
+  position:absolute;top:-22px;left:20px;width:16px;height:24px;background:#fff;border-radius:8px 8px 0 0;
+}
+#tip{
+  position:absolute;top:40px;width:100%;text-align:center;color:#fff;font-size:18px;text-shadow:0 1px 3px #000;
+}
+#score{
+  position:absolute;top:80px;width:100%;text-align:center;color:#fff;font-size:22px;font-weight:bold;
+}
+#startBtn{
+  position:absolute;top:140px;left:50%;transform:translateX(-50%);
+  padding:14px 28px;font-size:18px;border:none;border-radius:99px;background:#ff4444;color:#fff;
+}
+</style>
+</head>
+<body>
+<div id="tip">点击下方按钮开始游戏，摇晃手机驱动龙舟前进！</div>
+<div id="score">距离：0 m</div>
+<button id="startBtn">开始游戏</button>
+
+<div class="water">
+  <div class="water-wave"></div>
+</div>
+
+<div class="boat" id="boat">
+  <div class="boat-head"></div>
+  <div class="boat-body"></div>
+  <div class="people"></div>
+</div>
+
+<script>
+const boat = document.getElementById('boat');
+const scoreDom = document.getElementById('score');
+const tipDom = document.getElementById('tip');
+const startBtn = document.getElementById('startBtn');
+let posX = 50;
+let distance = 0;
+const shakeThreshold = 12;
+let lastShakeTime = 0;
+let sensorReady = false;
+
+function onMotion(e) {
+  const acc = e.accelerationIncludingGravity;
+  if(!acc) return;
+  const x = acc.x;
+  const y = acc.y;
+  const z = acc.z;
+  const shakeVal = Math.sqrt(x*x + y*y + z*z);
+  const now = Date.now();
+  if(shakeVal > shakeThreshold && now - lastShakeTime > 250){
+    lastShakeTime = now;
+    posX += 35;
+    distance += 1;
+    boat.style.left = posX + 'px';
+    scoreDom.innerText = `距离：${distance} m`;
+
+    const maxWidth = window.innerWidth - 140;
+    if(posX > maxWidth){
+      posX = 50;
+      distance = 0;
+      alert('🏁 冲线成功！重新开始');
+    }
+  }
+}
+
+startBtn.onclick = function(){
+  if (!window.DeviceMotionEvent) {
+    tipDom.innerText = '当前浏览器不支持传感器！';
+    return;
+  }
+  if(!sensorReady){
+    window.addEventListener('devicemotion', onMotion);
+    sensorReady = true;
+    tipDom.innerText = '✅ 传感器已开启！摇晃手机！';
+    startBtn.style.display = 'none';
+  }
+}
+</script>
+</body>
+</html>

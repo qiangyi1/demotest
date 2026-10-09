@@ -1,435 +1,154 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>🚣 划龙舟大赛【纯前端演示版，无后端】</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>陀螺仪小游戏演示</title>
 <style>
-*{ margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  background: linear-gradient(180deg, #0c1445 0%, #1a3a6c 40%, #1e5a8c 100%);
-  min-height: 100vh;
-  color: #fff;
-}
-
-/* ===== 大屏样式 ===== */
-/* 顶部标题栏 */
-.header {
-  text-align: center;
-  padding: 20px;
-  position: relative;
-}
-.header h1 {
-  font-size: 48px;
-  text-shadow: 0 2px 8px rgba(0,0,0,.5);
-  letter-spacing: 4px;
-}
-.countdown-display {
-  position: absolute;
-  right: 40px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 56px;
-  font-weight: bold;
-  color: #ffd700;
-  text-shadow: 0 0 20px rgba(255,215,0,.6);
-}
-.status-label {
-  position: absolute;
-  left: 40px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 24px;
-  opacity: .8;
-}
-/* 赛道区域 */
-.tracks {
-  position: relative;
-  padding: 20px 60px;
-  height: calc(100vh - 200px);
-  overflow-y: auto;
-  overflow-x: hidden;
-}
-.track {
-  position: relative;
-  height: 120px;
-  margin-bottom: 16px;
-  background: linear-gradient(90deg, rgba(255,255,255,.05) 0%, rgba(255,255,255,.1) 100%);
-  border-radius: 12px;
-  border: 2px solid rgba(255,255,255,.15);
-  overflow: hidden;
-}
-.tracks::-webkit-scrollbar { width: 10px; }
-.tracks::-webkit-scrollbar-track { background: rgba(255,255,255,0.1); border-radius: 4px; }
-.tracks::-webkit-scrollbar-thumb { background: rgba(255,215,0,0.6); border-radius: 4px; }
-.tracks::-webkit-scrollbar-thumb:hover { background: rgba(255,215,0,0.9); }
-.track::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(90deg,transparent 0,transparent 40px,rgba(255,255,255,.03) 40px,rgba(255,255,255,.03) 80px);
-  animation: wave 3s linear infinite;
-}
-@keyframes wave { from { transform: translateX(0); } to { transform: translateX(80px); } }
-.finish-line {
-  position: fixed;
-  right: 60px;
-  top: 200px;
-  bottom: 0;
-  width: 6px;
-  background: repeating-linear-gradient(180deg,#fff 0,#fff 10px,#000 10px,#000 20px);
-  z-index: 5;
-}
-.boat {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 80px;
-  transition: left .5s ease-out;
-  z-index: 2;
-}
-.boat-label {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  padding: 8px 16px;
-  border-radius: 8px;
-  font-size: 20px;
-  font-weight: bold;
-  z-index: 1;
-  white-space: nowrap;
-  transition: left .5s ease-out;
-}
-.boat-score {
-  position: absolute;
-  right: 100px;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 32px;
-  font-weight: bold;
-  color: #ffd700;
-  z-index: 3;
-}
-.overlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.7);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  z-index: 100;
-}
-.overlay.active { display: flex; }
-.overlay .big {
-  font-size: 120px;
-  font-weight: bold;
-  color: #ffd700;
-  text-shadow: 0 0 40px rgba(255,215,0,.8);
-}
-.overlay h2 { font-size: 48px; margin: 20px 0; }
-.ranking { margin: 30px 0; }
-.ranking-item {
-  font-size: 32px;
-  padding: 10px 40px;
-  margin: 8px 0;
-  border-radius: 8px;
-}
-.demo-control{
-  position: fixed;
-  bottom:20px;
-  left:20px;
-  z-index:99;
-}
-.demo-control button{
-  padding:10px 20px;
-  font-size:18px;
-  margin:4px;
-}
-
-/* ===== 手机选手页面样式 ===== */
-.phone-wrap{
-  padding:30px 20px;
-  min-height:100vh;
-}
-.phone-wrap h1{text-align:center;font-size:32px;margin-bottom:30px;color:#ffd700}
-.team-list{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:30px}
-.team-btn{
-  padding:24px 12px;
-  border:none;border-radius:16px;
-  font-size:22px;font-weight:bold;
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{
+  height:100%;
+  overflow:hidden;
+  background:#0b1020;
+  font-family:system-ui,sans-serif;
   color:#fff;
 }
-.team-btn.selected{box-shadow:0 0 0 4px #ffd700}
-#shake-area{
-  display:none;
-  text-align:center;
+#info{
+  position:fixed;
+  top:12px;
+  left:12px;
+  z-index:10;
+  background:rgba(0,0,0,0.55);
+  padding:10px 14px;
+  border-radius:10px;
+  font-size:14px;
+  line-height:1.5;
 }
-#shake-area.active{display:block;}
-.tip{font-size:20px;margin:20px 0}
-.boat-icon{font-size:120px;margin:30px 0}
-#statusText{font-size:24px;color:#ffd700}
+#tip{
+  position:fixed;
+  bottom:24px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  background:rgba(255,180,0,0.25);
+  border:1px solid rgba(255,200,0,0.6);
+  padding:12px 20px;
+  border-radius:99px;
+  font-size:15px;
+  white-space:nowrap;
+}
+#ball{
+  width:60px;
+  height:60px;
+  border-radius:50%;
+  background:radial-gradient(circle at 30% 30%, #fff, #42a5f5, #1565c0);
+  box-shadow:0 0 30px #42a5f588;
+  position:absolute;
+  transition:transform 0.06s linear;
+}
+#container{
+  width:100vw;
+  height:100vh;
+  position:relative;
+}
+.btn{
+  position:fixed;
+  top:12px;
+  right:12px;
+  z-index:10;
+  padding:10px 16px;
+  background:#2196f3;
+  color:#fff;
+  border:none;
+  border-radius:10px;
+  font-size:15px;
+}
 </style>
 </head>
 <body>
-
-<div id="screen-view">
-  <div class="header">
-    <div class="status-label" id="status-label">等待开始</div>
-    <h1>🚣 划龙舟大赛 🐉</h1>
-    <div class="countdown-display" id="countdown-display">--</div>
-  </div>
-  <div class="tracks" id="tracks">
-    <div class="finish-line"></div>
-  </div>
-  <div class="overlay" id="overlay">
-    <div class="big" id="overlay-big">3</div>
-    <h2 id="overlay-title"></h2>
-    <div class="ranking" id="overlay-ranking"></div>
-  </div>
-  <div class="demo-control">
-    <button onclick="startGame()">开始比赛</button>
-    <button onclick="resetGame()">重置</button>
-  </div>
+<div id="container">
+  <div id="ball"></div>
 </div>
-
-<div id="phone-view" class="phone-wrap" style="display:none;">
-  <h1>🚣 划龙舟大赛</h1>
-  <div id="select-area">
-    <div class="team-list">
-      <button class="team-btn" style="background:#3498db" onclick="selectTeam('t1','猛虎队')">猛虎队</button>
-      <button class="team-btn" style="background:#e74c3c" onclick="selectTeam('t2','雄鹰队')">雄鹰队</button>
-      <button class="team-btn" style="background:#2ecc71" onclick="selectTeam('t3','猎豹队')">猎豹队</button>
-      <button class="team-btn" style="background:#f39c12" onclick="selectTeam('t4','雷霆队')">雷霆队</button>
-    </div>
-    <p style="text-align:center;opacity:0.8">请选择你的参赛队伍</p>
-  </div>
-  <div id="shake-area">
-    <div class="boat-icon">🚣</div>
-    <p class="tip">用力摇晃手机划桨！</p>
-    <p id="statusText">等待晃动...</p>
-  </div>
+<div id="info">
+  支持状态：<span id="support">检测中...</span><br>
+  alpha: <span id="alpha">0</span><br>
+  beta: <span id="beta">0</span><br>
+  gamma: <span id="gamma">0</span>
 </div>
+<div id="tip">📱 倾斜手机，控制小球移动</div>
+<button class="btn" id="startBtn">开启陀螺仪</button>
 
 <script>
-const $ = id => document.getElementById(id);
-let maxScoreRef = 100;
-let myTeamId = null;
-let canShake = true;
-const shakeThreshold = 12;
+const ball = document.getElementById('ball');
+const startBtn = document.getElementById('startBtn');
+const supportEl = document.getElementById('support');
+const alphaEl = document.getElementById('alpha');
+const betaEl = document.getElementById('beta');
+const gammaEl = document.getElementById('gamma');
 
-// 判断是手机还是电脑，自动切换视图
-function isMobile(){
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-}
-if(isMobile()){
-  $('phone-view').style.display="block";
-  $('screen-view').style.display="none";
-}else{
-  $('phone-view').style.display="none";
-  $('screen-view').style.display="block";
-}
+let ballX = window.innerWidth / 2;
+let ballY = window.innerHeight / 2;
+const ballSize = 60;
+let isStart = false;
 
-// 初始化游戏状态存入localStorage
-function initGameState(){
-  const state = {
-    status: "idle",
-    remainTime: 30,
-    teams:{
-      t1:{name:"猛虎队",score:0},
-      t2:{name:"雄鹰队",score:0},
-      t3:{name:"猎豹队",score:0},
-      t4:{name:"雷霆队",score:0},
-    },
-    players:[]
-  }
-  localStorage.setItem('dragonboatState', JSON.stringify(state));
-  return state;
-}
-// 读取状态
-function getState(){
-  const str = localStorage.getItem('dragonboatState');
-  if(!str) return initGameState();
-  return JSON.parse(str);
-}
-// 保存状态
-function saveState(s){
-  localStorage.setItem('dragonboatState', JSON.stringify(s));
+// 判断浏览器是否支持设备方向事件
+if (window.DeviceOrientationEvent) {
+  supportEl.textContent = "✅ 浏览器支持陀螺仪";
+} else {
+  supportEl.textContent = "❌ 不支持陀螺仪";
+  startBtn.disabled = true;
 }
 
-// 数字转中文名次
-function numToCn(n) {
-  const cn = ['一','二','三','四','五','六','七','八','九','十','十一','十二'];
-  return cn[n] || (n+1);
-}
-// 渲染赛道
-function renderTracks(teamsObj) {
-  $('tracks').querySelectorAll('.track').forEach(t => t.remove());
-  const colorList = ['#3498db','#e74c3c','#2ecc71','#f39c12','#9b59b6','#1abc9c'];
-  const teams = Object.entries(teamsObj).map(([id,item],idx)=>{
-    return {
-      id,
-      name: item.name,
-      score: item.score,
-      color: colorList[idx % colorList.length],
-      members: 0
-    }
-  });
-  teams.forEach((t, i) => {
-    const track = document.createElement('div');
-    track.className = 'track';
-    track.id = 'track-' + t.id;
-    track.innerHTML = `
-      <div class="boat-label" id="label-${t.id}" style="background:${t.color}">${t.name} · ${t.members || 0}人</div>
-      <div class="boat" id="boat-${t.id}">🚣</div>
-      <div class="boat-score" id="score-${t.id}">0</div>
-    `;
-    $('tracks').appendChild(track);
-  });
-  return teams;
-}
-// 更新龙舟位置
-function updateBoats(teams) {
-  const maxScore = Math.max(...teams.map(t => t.score), 1);
-  maxScoreRef = Math.max(maxScore * 1.15, 50);
-  teams.forEach(t => {
-    const boat = $('boat-' + t.id);
-    const label = $('label-' + t.id);
-    const score = $('score-' + t.id);
-    if (!boat) return;
-    const pct = Math.min(90, (t.score / maxScoreRef) * 90);
-    boat.style.left = `calc(${pct}% - 60px)`;
-    label.style.left = `calc(${pct}% + 40px)`;
-    score.textContent = t.score;
-  });
-}
-// 大屏渲染游戏状态
-function handleState(gameState) {
-  const teamsRaw = gameState.teams;
-  let teams = Object.entries(teamsRaw).map(([id,item],idx)=>{
-    const colorList = ['#3498db','#e74c3c','#2ecc71','#f39c12','#9b59b6','#1abc9c'];
-    return {
-      id,
-      name: item.name,
-      score: item.score,
-      color: colorList[idx % colorList.length],
-      members: gameState.players.filter(p=>p.teamId === id).length
-    }
-  });
-  if (!$('tracks').querySelector('.track')) {
-    renderTracks(teamsRaw);
-  }
-  updateBoats(teams);
-  if (gameState.status === 'idle') {
-    $('status-label').textContent = '等待开始';
-    $('countdown-display').textContent = '--';
-    $('overlay').classList.remove('active');
-  } else if (gameState.status === 'running') {
-    $('status-label').textContent = '比赛进行中';
-    $('overlay').classList.remove('active');
-    $('countdown-display').textContent = gameState.remainTime.toFixed(1) + 's';
-  } else if (gameState.status === 'finished') {
-    $('status-label').textContent = '比赛结束';
-    $('countdown-display').textContent = '🏁';
-    const sorted = [...teams].sort((a, b) => b.score - a.score);
-    $('overlay').classList.add('active');
-    $('overlay-big').textContent = '🏆';
-    $('overlay-title').textContent = '最终排名';
-    $('overlay-ranking').innerHTML = sorted.map((t, i) =>
-      `<div class="ranking-item" style="background:${t.color}44; border-left: 6px solid ${t.color}">
-        第${numToCn(i)}名 · ${t.name} · ${t.score} 次
-      </div>`
-    ).join('');
-  }
+// 监听陀螺仪数据
+function handleOrientation(e) {
+  if(!isStart) return;
+  const beta = e.beta;  // 前后俯仰 -180 ~ 180
+  const gamma = e.gamma;// 左右倾斜 -90 ~ 90
+
+  alphaEl.textContent = e.alpha?.toFixed(1) || "0";
+  betaEl.textContent = beta?.toFixed(1) || "0";
+  gammaEl.textContent = gamma?.toFixed(1) || "0";
+
+  // 倾斜映射位移，调节灵敏度
+  const sensitivity = 2.2;
+  ballX += gamma * sensitivity;
+  ballY += (beta - 45) * sensitivity;
+
+  // 边界限制，不让小球跑出屏幕
+  ballX = Math.max(0, Math.min(window.innerWidth - ballSize, ballX));
+  ballY = Math.max(0, Math.min(window.innerHeight - ballSize, ballY));
+
+  ball.style.left = ballX + 'px';
+  ball.style.top = ballY + 'px';
 }
 
-// 大屏定时刷新状态
-if(!isMobile()){
-  setInterval(()=>{
-    const gs = getState();
-    handleState(gs);
-  },300)
-}
-
-// 开始比赛
-function startGame(){
-  let gs = getState();
-  if(gs.status === "running") return;
-  gs.status = "running";
-  gs.remainTime = 30;
-  saveState(gs);
-  const timer = setInterval(()=>{
-    let s = getState();
-    if(s.status !== 'running'){
-      clearInterval(timer);
-      return;
-    }
-    s.remainTime -= 0.5;
-    if(s.remainTime <= 0){
-      s.remainTime = 0;
-      s.status = "finished";
-      clearInterval(timer);
-    }
-    saveState(s);
-  },500);
-}
-function resetGame(){
-  initGameState();
-}
-
-// ==========手机端逻辑：选队伍 + 摇晃加分==========
-function selectTeam(tid, tname){
-  myTeamId = tid;
-  $('select-area').style.display = "none";
-  $('shake-area').classList.add("active");
-
-  // 苹果手机陀螺仪权限申请
-  if (typeof DeviceMotionEvent.requestPermission === 'function') {
-    DeviceMotionEvent.requestPermission().then(permission => {
-      if (permission === 'granted') {
-        startListenShake();
+// iOS 需要用户交互请求权限
+startBtn.addEventListener('click', async ()=>{
+  if (window.DeviceOrientationEvent && typeof DeviceOrientationEvent.requestPermission === 'function') {
+    try{
+      const permission = await DeviceOrientationEvent.requestPermission();
+      if(permission === 'granted'){
+        window.addEventListener('deviceorientation', handleOrientation);
+        isStart = true;
+        startBtn.textContent="已开启";
+      }else{
+        alert("权限被拒绝，无法使用陀螺仪");
       }
-    })
-  } else {
-    startListenShake();
-  }
-}
-
-function startListenShake(){
-  window.addEventListener('devicemotion', function(e){
-    if(!canShake || !myTeamId) return;
-    const acc = e.accelerationIncludingGravity;
-    if(!acc) return;
-    const x = acc.x || 0;
-    const y = acc.y || 0;
-    const z = acc.z || 0;
-    const g = Math.sqrt(x*x + y*y + z*z);
-
-    if(g > shakeThreshold){
-      canShake = false;
-      $('statusText').innerText = "划桨！💦";
-      // 本地直接加分（不需要后端）
-      let gs = getState();
-      if(gs.status === "running" && gs.teams[myTeamId]){
-        gs.teams[myTeamId].score +=1;
-        saveState(gs);
-      }
-      setTimeout(()=>{
-        $('statusText').innerText = "等待晃动...";
-        canShake = true;
-      },300)
+    }catch(err){
+      alert("授权异常："+err.message);
     }
-  })
-}
+  }else{
+    window.addEventListener('deviceorientation', handleOrientation);
+    isStart = true;
+    startBtn.textContent="已开启";
+  }
+})
 
-// 页面加载初始化
-window.onload = ()=>{
-  if(!localStorage.getItem('dragonboatState')) initGameState();
-  if(!isMobile()) handleState(getState());
-}
+// 窗口大小变化，重置小球位置
+window.addEventListener('resize', ()=>{
+  ballX = window.innerWidth / 2;
+  ballY = window.innerHeight / 2;
+})
 </script>
 </body>
 </html>

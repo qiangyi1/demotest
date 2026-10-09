@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>摇一摇 跑龙舟</title>
+<title>摇一摇跑龙舟【修复版】</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
 html,body{height:100%;overflow:hidden;background:#87CEEB;font-family:system-ui,sans-serif}
@@ -45,7 +45,7 @@ html,body{height:100%;overflow:hidden;background:#87CEEB;font-family:system-ui,s
 </style>
 </head>
 <body>
-<div id="tip">点击下方按钮开始游戏，摇晃手机驱动龙舟前进！</div>
+<div id="tip">点击【开始游戏】，允许传感器权限，摇晃手机！</div>
 <div id="score">距离：0 m</div>
 <button id="startBtn">开始游戏</button>
 
@@ -66,9 +66,8 @@ const tipDom = document.getElementById('tip');
 const startBtn = document.getElementById('startBtn');
 let posX = 50;
 let distance = 0;
-const shakeThreshold = 12;
+const shakeThreshold = 12; // 灵敏度，越小越灵敏
 let lastShakeTime = 0;
-let sensorReady = false;
 
 function onMotion(e) {
   const acc = e.accelerationIncludingGravity;
@@ -94,16 +93,23 @@ function onMotion(e) {
   }
 }
 
-startBtn.onclick = function(){
-  if (!window.DeviceMotionEvent) {
-    tipDom.innerText = '当前浏览器不支持传感器！';
-    return;
-  }
-  if(!sensorReady){
+startBtn.onclick = async function(){
+  try{
+    // IOS 必须申请传感器权限
+    if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+      const permission = await DeviceMotionEvent.requestPermission();
+      if (permission !== 'granted') {
+        tipDom.innerText = '❌ 你拒绝了传感器权限，无法摇一摇';
+        return;
+      }
+    }
+    // 安卓直接监听
     window.addEventListener('devicemotion', onMotion);
-    sensorReady = true;
-    tipDom.innerText = '✅ 传感器已开启！摇晃手机！';
+    tipDom.innerText = '✅ 传感器就绪！用力摇晃手机！';
     startBtn.style.display = 'none';
+  }catch(err){
+    tipDom.innerText = '❌ 浏览器不支持传感器，换Safari/Chrome';
+    console.error(err);
   }
 }
 </script>
